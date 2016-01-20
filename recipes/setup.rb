@@ -64,9 +64,11 @@ rbenv_gem "bundler" do
   ruby_version "2.1.2"
 end
 
-# node['project_dir'].each do |key, project_dir|
-# 	execute 'bundle install' do
-# 		cwd project_dir
-# 		not_if 'bundle check'
-# 	end
-# end
+# Run bundle install in project directories
+node['project_dir'].each do | project_dir |
+	execute 'bundle install' do
+		cwd project_dir
+		env "PATH" => "/opt/rbenv/shims:#{ENV['PATH']}"
+		not_if 'bundle check'
+	end
+end
