@@ -6,56 +6,52 @@
 #
 # All rights reserved - Do Not Redistribute
 #
-data_bag = data_bag_item('git_deploy_key','pubs_portal_git')
+include_recipe "rbenv::default"
+include_recipe "rbenv::ruby_build"
+include_recipe "rbenv::rbenv_vars"
 
-# package 'ruby' do
-# 	action :upgrade
-# end
-
-bash 'ruby dependencies' do
- code <<-EOF
-  sudo apt-get update
-	sudo apt-get install git-core curl zlib1g-dev build-essential libssl-dev libreadline-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt1-dev libcurl4-openssl-dev python-software-properties libffi-dev -y
-	EOF
-end
-
-bash 'install ruby' do
-	code <<-EOF
-	cd
-	git clone git://github.com/sstephenson/rbenv.git .rbenv
-	sudo chown vagrant:vagrant .rbenv
-	echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.bashrc
-	echo 'eval "$(rbenv init -)"' >> ~/.bashrc
-	exec $SHELL
-
-	git clone git://github.com/sstephenson/ruby-build.git ~/.rbenv/plugins/ruby-build
-	echo 'export PATH="$HOME/.rbenv/plugins/ruby-build/bin:$PATH"' >> ~/.bashrc
-	exec $SHELL
-
-	rbenv install 2.2.0
-	rbenv global 2.2.0
-	ruby -v
-	EOF
-end
+# SSH keys for pubs portal repos
+data_bag_api = data_bag_item('git_deploy_key','pubs_portal_api_git')
+data_bag_front_end = data_bag_item('git_deploy_key','pubs_portal_front_end_git')
 
 package 'git'
 
+# Add github.com to the known_hosts file
 ssh_known_hosts_entry 'github.com'
 
+rbenv_ruby node['ruby']['version'] do
+	global true
+end
+
+# Add SSH private keys to /home/vagrant/.ssh
 file "#{ENV['HOME']}/.ssh/id_rsa" do
-  content data_bag['key']
+  content data_bag_api['key']
   mode '0400'
   user 'vagrant'
 end
 
-git "#{ENV['HOME']}/pubs-portal" do
-  repository node[:pubs_portal][:git_repository]
-  revision node[:pubs_portal][:git_revision]
+file "#{ENV['HOME']}/.ssh/id_rsa_front_end" do
+  content data_bag_front_end['key']
+  mode '0400'
+  user 'vagrant'
+end
+
+# Pull pubs portal code from repos
+git "#{ENV['HOME']}/pubs-portal-api" do
+  repository node[:pubs_portal_api][:git_repository]
+  revision node[:pubs_portal_api][:branch]
   user 'vagrant'
   action :sync
 end
 
-package 'libpq-dev' # need a sudo apt-get install libpq-dev
+git "#{ENV['HOME']}/pubs-portal-front-end" do
+  repository node[:pubs_portal_front_end][:git_repository]
+  revision node[:pubs_portal_front_end][:branch]
+  user 'vagrant'
+  action :sync
+end
+
+# package 'libpq-dev' # need a sudo apt-get install libpq-dev
 gem_package 'bundler' # need a sudo gem install bundler?
 
 # need a bundle install
