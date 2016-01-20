@@ -1,68 +1,19 @@
 pubs-portal Cookbook
 ====================
-TODO: Enter the cookbook description here.
-
-e.g.
-This cookbook makes your favorite breakfast sandwich.
+Provides and provisions development environment for Pubs Portal.
 
 Requirements
 ------------
-TODO: List your cookbook requirements. Be sure to include any requirements this cookbook has on platforms, libraries, other cookbooks, packages, operating systems, etc.
+#### Platforms
+* Ubuntu 12.04
 
-e.g.
-#### packages
-- `toaster` - pubs-portal needs toaster to brown your bagel.
+#### Cookbooks
+Requires `ssh_known_hosts` cookbook for adding hosts and keys to known_hosts file.
 
-Attributes
-----------
-TODO: List your cookbook attributes here.
-
-e.g.
-#### pubs-portal::default
-<table>
-  <tr>
-    <th>Key</th>
-    <th>Type</th>
-    <th>Description</th>
-    <th>Default</th>
-  </tr>
-  <tr>
-    <td><tt>['pubs-portal']['bacon']</tt></td>
-    <td>Boolean</td>
-    <td>whether to include bacon</td>
-    <td><tt>true</tt></td>
-  </tr>
-</table>
+Requires `rbenv` cookbook for ruby installation
 
 Usage
 -----
-#### pubs-portal::default
-TODO: Write usage instructions for each cookbook.
+pubs-portal::default
+-Includes pubs-portal::setup
 
-e.g.
-Just include `pubs-portal` in your node's `run_list`:
-
-```json
-{
-  "name":"my_node",
-  "run_list": [
-    "recipe[pubs-portal]"
-  ]
-}
-```
-
-Contributing
-------------
-TODO: (optional) If this is a public cookbook, detail the process for contributing. If this is a private cookbook, remove this section.
-
-e.g.
-1. Fork the repository on Github
-2. Create a named feature branch (like `add_component_x`)
-3. Write your change
-4. Write tests for your change (if applicable)
-5. Run the tests, ensuring they all pass
-6. Submit a Pull Request using Github
-
-License and Authors
--------------------
-Authors: TODO: List authors
