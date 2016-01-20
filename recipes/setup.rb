@@ -19,6 +19,7 @@ package 'git'
 # Add github.com to the known_hosts file
 ssh_known_hosts_entry 'github.com'
 
+# Install ruby with rbenv
 rbenv_ruby node['ruby']['version'] do
 	global true
 end
@@ -51,13 +52,21 @@ git "#{ENV['HOME']}/pubs-portal-front-end" do
   action :sync
 end
 
-# package 'libpq-dev' # need a sudo apt-get install libpq-dev
-gem_package 'bundler' # need a sudo gem install bundler?
+# Package required for pg gem
+package 'libpq-dev'
 
-# need a bundle install
+# Need to reload OHAI to ensure the newest ruby is loaded up
+ohai "reload" do
+  action :reload
+end
 
-# installs bundler if not already installed
-# execute 'bundle install' do
-#   cwd "#{ENV['HOME']}/pubs-portal"
-#   not_if 'bundle check'
+rbenv_gem "bundler" do
+  ruby_version "2.1.2"
+end
+
+# node['project_dir'].each do |key, project_dir|
+# 	execute 'bundle install' do
+# 		cwd project_dir
+# 		not_if 'bundle check'
+# 	end
 # end

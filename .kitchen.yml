@@ -6,7 +6,8 @@ provisioner:
   name: chef_solo
 
 platforms:
-  - name: ubuntu-14.04
+  # - name: ubuntu-14.04
+  - name: box-cutter/ubuntu1404-desktop # Desktop-enabled Ubuntu 14.04
   # - name: centos-7.1
 
 suites:

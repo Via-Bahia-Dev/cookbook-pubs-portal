@@ -6,3 +6,6 @@ default['pubs_portal_front_end']['git_repository'] = 'git@github.com:Via-Bahia-D
 default['pubs_portal_front_end']['branch'] = 'master'
 
 default['ruby']['version'] = '2.1.2'
+
+default['project_dir']['api'] = "#{ENV['HOME']}/pubs-portal-api"
+default['project_dir']['front_end'] = "#{ENV['HOME']}/pubs-portal-api"
