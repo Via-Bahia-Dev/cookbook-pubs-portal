@@ -72,3 +72,36 @@ node['project_dir'].each do | project_dir |
 		not_if 'bundle check'
 	end
 end
+
+# Install nodejs for uglifier gem
+package 'nodejs'
+package 'postgresql'
+
+# Create joypact user with superuser privileges
+bash 'create db user' do
+  user 'postgres'
+  code <<-EOF
+  psql -c "CREATE USER joypact WITH PASSWORD 'jesusothersyou' SUPERUSER;"
+  EOF
+  # not_if: Prevent a resource from executing when the condition returns true.
+  # only_if: Allow a resource to execute only if the condition returns true.
+  not_if 'psql -c "\du" | cut -d \| -f 1 | grep -w joypact', :user => 'postgres'
+end
+
+ENV['DATABASE_USERNAME'] = 'joypact'
+ENV['DATABASE_PASSWORD'] = 'jesusothersyou'
+
+# Runs rake db:create, db:schema:load, db:seed
+bash 'setup db' do
+  user 'vagrant'
+  cwd "#{ENV['HOME']}/pubs-portal-api"
+  env "GEM_PATH" => "/opt/rbenv/versions/2.1.2/lib/ruby/gems/2.1.0"
+  code <<-EOF
+  /opt/rbenv/versions/2.1.2/bin/rake db:setup
+  EOF
+end
+
+
+
+
+

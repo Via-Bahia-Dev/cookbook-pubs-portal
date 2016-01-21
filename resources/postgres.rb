@@ -1,0 +1,2 @@
+resource_name :postgres
+
