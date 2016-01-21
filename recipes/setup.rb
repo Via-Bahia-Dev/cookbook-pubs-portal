@@ -68,7 +68,6 @@ end
 node['project_dir'].each do | project_dir |
 	execute 'bundle install' do
 		cwd project_dir
-		env "PATH" => "/opt/rbenv/shims:#{ENV['PATH']}"
 		not_if 'bundle check'
 	end
 end
@@ -83,25 +82,24 @@ bash 'create db user' do
   code <<-EOF
   psql -c "CREATE USER joypact WITH PASSWORD 'jesusothersyou' SUPERUSER;"
   EOF
-  # not_if: Prevent a resource from executing when the condition returns true.
-  # only_if: Allow a resource to execute only if the condition returns true.
   not_if 'psql -c "\du" | cut -d \| -f 1 | grep -w joypact', :user => 'postgres'
 end
 
-ENV['DATABASE_USERNAME'] = 'joypact'
-ENV['DATABASE_PASSWORD'] = 'jesusothersyou'
+bash 'persistent env variables' do
+  code <<-EOF
+  echo 'export RBENV_ROOT=/opt/rbenv' >> ~/.bashrc
+  echo 'export PATH=$RBENV_ROOT/bin:/opt/rbenv/plugins/ruby_build/bin:/opt/rbenv/shims:$PATH' >> ~/.bashrc
+  echo 'export DATABASE_PASSWORD=jesusothersyou' >> ~/.bashrc
+  echo 'export DATABASE_USERNAME=joypact' >> ~/.bashrc
+  source ~/.bashrc
+  EOF
+end
 
 # Runs rake db:create, db:schema:load, db:seed
 bash 'setup db' do
   user 'vagrant'
   cwd "#{ENV['HOME']}/pubs-portal-api"
-  env "GEM_PATH" => "/opt/rbenv/versions/2.1.2/lib/ruby/gems/2.1.0"
   code <<-EOF
   /opt/rbenv/versions/2.1.2/bin/rake db:setup
   EOF
 end
-
-
-
-
-
