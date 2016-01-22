@@ -85,6 +85,9 @@ bash 'create db user' do
   not_if 'psql -c "\du" | cut -d \| -f 1 | grep -w joypact', :user => 'postgres'
 end
 
+ENV['DATABASE_PASSWORD'] = 'jesusothersyou'
+ENV['DATABASE_USERNAME'] = 'joypact'
+
 bash 'persistent env variables' do
   code <<-EOF
   echo 'export RBENV_ROOT=/opt/rbenv' >> ~/.bashrc
@@ -95,7 +98,7 @@ bash 'persistent env variables' do
   EOF
 end
 
-# Runs rake db:create, db:schema:load, db:seed
+# # Runs rake db:create, db:schema:load, db:seed
 bash 'setup db' do
   user 'vagrant'
   cwd "#{ENV['HOME']}/pubs-portal-api"
@@ -106,3 +109,12 @@ end
 
 package 'imagemagick'
 
+bash "install_sublime" do
+  user "root"
+  cwd "/tmp"
+  code <<-EOH
+    wget http://c758482.r82.cf2.rackcdn.com/sublime-text_build-3083_amd64.deb
+    sudo dpkg -i sublime*
+  EOH
+  not_if 'ls -l sublime*'
+end
