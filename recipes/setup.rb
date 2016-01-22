@@ -103,3 +103,6 @@ bash 'setup db' do
   /opt/rbenv/versions/2.1.2/bin/rake db:setup
   EOF
 end
+
+package 'imagemagick'
+
